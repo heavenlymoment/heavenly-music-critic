@@ -2078,7 +2078,7 @@ async function generateTopic() {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
+        max_tokens: 1500,
         messages: [{ role: 'user', content: prompt }]
       })
     });
@@ -2379,7 +2379,7 @@ async function generateReview() {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 2000,
+        max_tokens: 4000,
         messages: [{ role: 'user', content: prompt }]
       })
     });
@@ -2393,7 +2393,18 @@ async function generateReview() {
 
     var raw = data.content.map(function(b) { return b.text || ''; }).join('');
     var clean = raw.replace(/```json/g, '').replace(/```/g, '').trim();
-    var review = JSON.parse(clean);
+    // JSON이 잘렸을 경우 마지막 완전한 } 까지만 파싱 시도
+    var lastBrace = clean.lastIndexOf('}');
+    if (lastBrace !== -1 && lastBrace < clean.length - 1) {
+      clean = clean.substring(0, lastBrace + 1);
+    }
+    var review;
+    try {
+      review = JSON.parse(clean);
+    } catch(parseErr) {
+      // 마지막 완성된 필드까지 부분 복구
+      throw new Error('AI 응답이 너무 길어 잘렸습니다. 평론 깊이를 "간략 리뷰"로 줄이거나 평론 항목을 줄여서 다시 시도해주세요.');
+    }
 
     stopProgress(true);
     setTimeout(function() {
