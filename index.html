@@ -1128,6 +1128,141 @@
   @keyframes blink { 50% { opacity: 0; } }
 
   /* ══════════════════════════════
+     🎲 노래 주제 추천 카드
+  ══════════════════════════════ */
+  .topic-card {
+    background: linear-gradient(135deg, #0f1923 0%, #1a2a3a 100%);
+    border: 1px solid rgba(200,168,75,0.2);
+    border-radius: 2px;
+    padding: 28px 32px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .topic-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), var(--accent), var(--gold));
+  }
+  .topic-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .topic-card-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--gold);
+  }
+  .topic-card-desc {
+    font-size: 0.78rem;
+    color: #4a6080;
+    margin-bottom: 18px;
+  }
+  .btn-topic {
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    border: 1px solid rgba(200,168,75,0.4);
+    border-radius: 2px;
+    color: var(--gold);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s;
+    letter-spacing: 0.04em;
+    font-family: var(--font-sans);
+  }
+  .btn-topic:hover {
+    background: rgba(200,168,75,0.1);
+    border-color: var(--gold);
+  }
+  .btn-topic:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .topic-result {
+    display: none;
+    margin-top: 18px;
+    animation: fadeUp 0.4s ease;
+  }
+  .topic-result.show { display: block; }
+
+  .topic-context-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .topic-ctx-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    font-size: 0.72rem;
+    color: #6a8aa0;
+  }
+
+  .topic-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .topic-item {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 3px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .topic-item:hover {
+    background: rgba(200,168,75,0.08);
+    border-color: rgba(200,168,75,0.3);
+  }
+  .topic-item-num {
+    font-size: 0.65rem;
+    color: var(--gold);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+  .topic-item-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #e0e8f0;
+    margin-bottom: 4px;
+  }
+  .topic-item-desc {
+    font-size: 0.78rem;
+    color: #5a7a90;
+    line-height: 1.5;
+  }
+  .topic-item-mood {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 2px 8px;
+    background: rgba(44,95,138,0.3);
+    border-radius: 10px;
+    font-size: 0.7rem;
+    color: #7ab0d0;
+  }
+  .topic-apply-hint {
+    font-size: 0.72rem;
+    color: #3a5a70;
+    text-align: center;
+    margin-top: 12px;
+  }
+
+  /* ══════════════════════════════
      🎵 음원 업로드
   ══════════════════════════════ */
   .audio-upload-zone {
@@ -1249,6 +1384,22 @@
     <h1>헤븐리 <span>Heavenly</span></h1>
     <p class="header-sub">음악을 듣는 데서 멈추지 않고, 끝까지 해석하는 AI 평론가</p>
   </header>
+
+  <!-- 🎲 오늘의 감성 노래 주제 추천 -->
+  <div class="topic-card">
+    <div class="topic-card-header">
+      <div class="topic-card-title">🎲 오늘의 감성 노래 주제 추천</div>
+    </div>
+    <div class="topic-card-desc">오늘 날짜·시간·계절을 분석해서 어울리는 노래 주제를 추천해드려요. 원하실 때만 클릭하세요!</div>
+    <button class="btn-topic" id="topicBtn" onclick="generateTopic()">
+      ✦ 오늘에 어울리는 노래 주제 추천받기
+    </button>
+    <div class="topic-result" id="topicResult">
+      <div class="topic-context-row" id="topicContextRow"></div>
+      <div class="topic-list" id="topicList"></div>
+      <div class="topic-apply-hint">💡 주제를 클릭하면 곡 설명란에 자동으로 채워져요</div>
+    </div>
+  </div>
 
   <!-- API 키 입력 -->
   <div class="apikey-card">
@@ -1860,6 +2011,133 @@ function removeAudio() {
   document.getElementById('audioFileInput').value = '';
   document.getElementById('audioPlayer').src = '';
   audioAnalysisData = null;
+}
+
+/* =============================================
+   🎲 오늘의 감성 노래 주제 추천
+============================================= */
+async function generateTopic() {
+  var apiKey = savedApiKey || document.getElementById('apiKeyInput').value.trim();
+  if (!apiKey || !apiKey.startsWith('sk-ant-')) {
+    showToast('⚠ 먼저 API 키를 저장해주세요');
+    return;
+  }
+
+  var btn = document.getElementById('topicBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ 오늘을 분석하는 중...';
+
+  // 현재 날짜/시간 정보 수집
+  var now = new Date();
+  var month = now.getMonth() + 1;
+  var day = now.getDate();
+  var hour = now.getHours();
+  var weekdays = ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'];
+  var weekday = weekdays[now.getDay()];
+
+  var season = month >= 3 && month <= 5 ? '봄' :
+               month >= 6 && month <= 8 ? '여름' :
+               month >= 9 && month <= 11 ? '가을' : '겨울';
+
+  var timeSlot = hour >= 5 && hour < 9   ? '이른 아침' :
+                 hour >= 9 && hour < 12  ? '오전' :
+                 hour >= 12 && hour < 14 ? '점심' :
+                 hour >= 14 && hour < 18 ? '오후' :
+                 hour >= 18 && hour < 21 ? '저녁' :
+                 hour >= 21 && hour < 24 ? '밤' : '깊은 밤';
+
+  var prompt = '오늘은 ' + month + '월 ' + day + '일 ' + weekday + ', ' + season + ', ' + timeSlot + '입니다.\n\n'
+    + '이 날짜·계절·시간대·요일의 감성에 어울리는 노래 주제 5가지를 추천해주세요.\n'
+    + '사회적·정치적 내용은 제외하고, 순수한 감성·서정·일상·자연·사랑·신앙 등의 주제로만 추천해주세요.\n\n'
+    + '반드시 아래 JSON 형식으로만 응답하세요. 마크다운 없이 순수 JSON만:\n\n'
+    + '{\n'
+    + '  "context": {\n'
+    + '    "season": "' + season + '",\n'
+    + '    "timeSlot": "' + timeSlot + '",\n'
+    + '    "weekday": "' + weekday + '",\n'
+    + '    "mood": "오늘의 전반적 감성 키워드 (예: 따뜻하고 설레는)"\n'
+    + '  },\n'
+    + '  "topics": [\n'
+    + '    {\n'
+    + '      "title": "주제 제목 (예: 봄비 맞으며 걷는 오후)",\n'
+    + '      "desc": "이 주제로 만들 수 있는 노래 내용 1-2문장",\n'
+    + '      "mood": "감성 태그 (예: 잔잔한 · 서정적)",\n'
+    + '      "forReview": "곡 설명란에 넣을 텍스트 (구체적인 음악 방향 포함)"\n'
+    + '    }\n'
+    + '  ]\n'
+    + '}';
+
+  try {
+    var response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    var data = await response.json();
+    if (!response.ok) throw new Error(data.error?.message || 'API 오류');
+
+    var raw = data.content.map(function(b){ return b.text||''; }).join('');
+    var clean = raw.replace(/```json/g,'').replace(/```/g,'').trim();
+    var result = JSON.parse(clean);
+
+    renderTopics(result);
+
+  } catch(err) {
+    showToast('⚠ 추천 생성 실패: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🔄 다시 추천받기';
+  }
+}
+
+function renderTopics(result) {
+  // 컨텍스트 배지
+  var ctx = result.context || {};
+  var ctxRow = document.getElementById('topicContextRow');
+  ctxRow.innerHTML = [
+    { icon: '🌸', val: ctx.season },
+    { icon: '🕐', val: ctx.timeSlot },
+    { icon: '📅', val: ctx.weekday },
+    { icon: '✨', val: ctx.mood }
+  ].filter(function(c){ return c.val; })
+   .map(function(c){
+     return '<span class="topic-ctx-badge">' + c.icon + ' ' + c.val + '</span>';
+   }).join('');
+
+  // 주제 목록
+  var list = document.getElementById('topicList');
+  list.innerHTML = '';
+  (result.topics || []).forEach(function(t, i) {
+    var el = document.createElement('div');
+    el.className = 'topic-item';
+    el.innerHTML =
+      '<div class="topic-item-num">주제 ' + (i+1) + '</div>'
+      + '<div class="topic-item-title">' + (t.title||'') + '</div>'
+      + '<div class="topic-item-desc">' + (t.desc||'') + '</div>'
+      + '<span class="topic-item-mood">' + (t.mood||'') + '</span>';
+
+    // 클릭 시 곡 설명란에 자동 채우기
+    el.addEventListener('click', function() {
+      var descEl = document.getElementById('description');
+      descEl.value = t.forReview || t.desc || '';
+      descEl.focus();
+      showToast('✓ 곡 설명란에 주제가 채워졌어요!');
+      descEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+    list.appendChild(el);
+  });
+
+  document.getElementById('topicResult').classList.add('show');
 }
 
 function saveApiKey() {
