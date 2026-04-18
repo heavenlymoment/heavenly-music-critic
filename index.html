@@ -2045,11 +2045,16 @@ async function generateTopic() {
     + '{"context":{"season":"' + season + '","timeSlot":"' + timeSlot + '","weekday":"' + weekday + '","mood":"오늘의 감성 키워드"},"topics":[{"title":"주제1","desc":"설명","mood":"태그","forReview":"곡설명"},{"title":"주제2","desc":"설명","mood":"태그","forReview":"곡설명"},{"title":"주제3","desc":"설명","mood":"태그","forReview":"곡설명"},{"title":"주제4","desc":"설명","mood":"태그","forReview":"곡설명"},{"title":"주제5","desc":"설명","mood":"태그","forReview":"곡설명"}]}';
 
   try {
-    var response = await fetch('/api/chat', {
+    var response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
       body: JSON.stringify({
-        apiKey: apiKey,
+        model: 'claude-sonnet-4-20250514',
         max_tokens: 2000,
         messages: [{ role: 'user', content: prompt }]
       })
@@ -2370,11 +2375,16 @@ async function generateReview() {
   document.getElementById('loadingState').scrollIntoView({ behavior: 'smooth' });
 
   try {
-    var response = await fetch('/api/chat', {
+    var response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
       body: JSON.stringify({
-        apiKey: apiKey,
+        model: 'claude-sonnet-4-20250514',
         max_tokens: 4000,
         messages: [{ role: 'user', content: prompt }]
       })
