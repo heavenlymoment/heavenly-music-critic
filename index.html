@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>헤븐리(Heavenly) — AI 음악 평론가</title>
+<title>뮤지엘(Musiel) — AI 음악 평론가</title>
 <style>
   /* 시스템 폰트 스택 — 외부 로딩 없이 모바일/PC 모두 즉시 렌더링 */
   :root {
@@ -1373,7 +1373,7 @@
 
   <header>
     <div class="header-label">World's First AI Music Critic</div>
-    <h1>헤븐리 <span>Heavenly</span></h1>
+    <h1>뮤지엘 <span>Musiel</span></h1>
     <p class="header-sub">음악을 듣고 제대로 분석해서 시원하게 평론합니다.<br>감정 너머, 음악 구조까지 듣습니다.</p>
   </header>
 
@@ -1579,7 +1579,7 @@
     </div>
 
     <button class="btn-generate" id="generateBtn" onclick="generateReview()">
-      <span>✦ 헤븐리 평론 생성하기</span>
+      <span>✦ 뮤지엘 평론 생성하기</span>
     </button>
   </div>
 
@@ -1599,7 +1599,7 @@
         <path d="M40 12 A28 28 0 0 1 68 40" stroke="#2c5f8a" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
       </svg>
     </div>
-    <div class="loading-text">헤븐리가 음악을 듣고 있습니다...</div>
+    <div class="loading-text">뮤지엘이 음악을 듣고 있습니다...</div>
     <div class="loading-sub">멜로디와 화성, 리듬과 보컬을 함께 읽는 중</div>
     <div style="margin-top:32px;background:var(--cream);border:1px solid var(--border);border-radius:2px;padding:20px 24px;text-align:left;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
@@ -1615,7 +1615,7 @@
   <!-- 평론 결과 -->
   <div class="review-output" id="reviewOutput">
     <div class="review-header">
-      <div class="review-badge">🎧 헤븐리 음악평론 · Heavenly AI Music Critic</div>
+      <div class="review-badge">🎧 뮤지엘 음악평론 · Musiel AI Music Critic</div>
       <div class="review-song-title" id="outTitle"></div>
       <div class="review-subtitle" id="outSubtitle"></div>
     </div>
@@ -1702,7 +1702,7 @@ let savedApiKey = '';
 window.addEventListener('DOMContentLoaded', function() {
   // localStorage에서 키 불러오기
   try {
-    const stored = localStorage.getItem('heavenly_api_key');
+    const stored = localStorage.getItem('musiel_api_key');
     if (stored) {
       savedApiKey = stored;
       document.getElementById('apiKeyInput').value = stored;
@@ -2138,7 +2138,7 @@ function saveApiKey() {
     return;
   }
   savedApiKey = val;
-  try { localStorage.setItem('heavenly_api_key', val); } catch(e) {}
+  try { localStorage.setItem('musiel_api_key', val); } catch(e) {}
   updateKeyStatus(true);
   showToast('✓ API 키가 저장되었습니다');
 }
@@ -2285,7 +2285,7 @@ async function generateReview() {
   var depthLabel = depthMap[depth] || '1000자 내외';
   var toneLabel = toneMap[tone] || '학술적이고 분석적인';
 
-  var prompt = '당신은 헤븐리(Heavenly)라는 AI 음악 평론가입니다.\n'
+  var prompt = '당신은 뮤지엘(Musiel)라는 AI 음악 평론가입니다.\n'
     + '음악을 멜로디, 화성, 리듬, 보컬, 가사, 편곡, 믹싱, 장르적 맥락까지 함께 분석하며,\n'
     + '화성학(코드 진행, 조성, 전조, 화음 기능)에 특히 정통합니다.\n'
     + 'Simon Frith, Philip Tagg, Allan F. Moore의 연구를 바탕으로 합니다.\n\n'
@@ -2409,7 +2409,7 @@ async function generateReview() {
     setTimeout(function() {
       document.getElementById('loadingState').classList.remove('show');
       document.getElementById('generateBtn').disabled = false;
-      document.getElementById('generateBtn').querySelector('span').textContent = '✦ 헤븐리 평론 생성하기';
+      document.getElementById('generateBtn').querySelector('span').textContent = '✦ 뮤지엘 평론 생성하기';
     }, 700);
   }
 }
@@ -2545,7 +2545,7 @@ function buildReviewText() {
   if (!currentReviewData) return '';
   var r = currentReviewData.review;
   var lines = [
-    '헤븐리(Heavenly) AI 음악평론',
+    '뮤지엘(Musiel) AI 음악평론',
     '────────────────────────────────────────',
     '〈' + currentReviewData.title + '〉',
     r.subtitle || '',
@@ -2602,7 +2602,7 @@ function downloadReview() {
   var blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
   var a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = '헤븐리_평론_' + (currentReviewData ? currentReviewData.title : '음악') + '.txt';
+  a.download = '뮤지엘_평론_' + (currentReviewData ? currentReviewData.title : '음악') + '.txt';
   a.click();
 }
 
